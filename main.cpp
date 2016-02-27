@@ -8,11 +8,14 @@ using namespace std;
 
 int main(int ac, char *av[])
 {
+    Maze *m;
     if (ac < 2)
         return 0;
 
-    Maze m = Maze(stoi(av[1]));
+    if (ac == 2)
+        m = new Maze(stoi(av[1]));
+    else
+        m = new Maze(stoi(av[1]), stoi(av[2]));
 
-    m.makeMaze();
-    m.drawMaze();
+    m->drawMaze();
 }

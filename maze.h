@@ -36,28 +36,6 @@ public:
             }
         }
     }
-    void makeMaze()
-    {
-        list<SpCell> steck;
-        steck.push_back(cells[0]);
-        steck.back()->toVisit();
-        while (!steck.empty()){
-            SpCell cell = steck.back();
-            if (cell->existNeighborNotVisit()){
-                SpCell randomcell {cell->getNeighborNotVisit()};
-                randomcell->toVisit();
-                steck.push_back(randomcell);
-                Wall wall = Wall(*cell, *randomcell);
-                for (auto& w: walls)
-                    if (w == wall){
-                        w.breakWall();
-                        break;
-                    }
-            }else{
-                steck.pop_back();
-            }
-        }
-    }
     void drawMaze()
     {
         cout << "+";
@@ -95,6 +73,28 @@ public:
 private:
     Maze(): sizeh(0), sizev(0) {}
 
+    void makeMaze()
+    {
+        list<SpCell> steck;
+        steck.push_back(cells[0]);
+        steck.back()->toVisit();
+        while (!steck.empty()){
+            SpCell cell = steck.back();
+            if (cell->existNeighborNotVisit()){
+                SpCell randomcell {cell->getNeighborNotVisit()};
+                randomcell->toVisit();
+                steck.push_back(randomcell);
+                Wall wall = Wall(*cell, *randomcell);
+                for (auto& w: walls)
+                    if (w == wall){
+                        w.breakWall();
+                        break;
+                    }
+            }else{
+                steck.pop_back();
+            }
+        }
+    }
     vector<SpCell> findNeighborCell(size_t id)
     {
         size_t line = ((id-1)/sizeh) + 1;

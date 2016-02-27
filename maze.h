@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <memory>
 #include <vector>
 #include <list>
@@ -48,7 +49,8 @@ public:
                 size_t id = cell->getId() - sizeh;
                 for (; id < cell->getId(); id++){
                     Wall wall = Wall( *(cells[id]), *(cells[id+sizeh]) );
-                    if( ! wallBreaked(wall) )
+                    auto poswall = find(walls.begin(), walls.end(), wall);
+                    if( poswall->isExist() )
                         cout << "--+";
                     else
                         cout << "  +";
@@ -59,7 +61,8 @@ public:
                     cout << "|";
                 cout << "  ";
                 Wall wall = Wall( *cell, *(cells[cell->getId()]) );
-                if( ! wallBreaked(wall) )
+                auto poswall = find(walls.begin(), walls.end(), wall);
+                if( poswall->isExist() )
                     cout << "|";
                 else
                     cout << " ";
@@ -121,21 +124,6 @@ private:
             cell->storeNeighborCell(nb);
         }
     }
-    bool wallExist(const Wall& w)
-    {
-        for (auto& wall: walls)
-            if (wall == w)
-                return true;
-        return false;
-    }
-    bool wallBreaked(const Wall& w)
-    {
-        for (auto& wall: walls)
-            if (wall == w)
-                if (wall.isExist())
-                    return false;
-        return true;
-    }
     void makeWalls()
     {
         for (auto& cell: cells){
@@ -143,7 +131,8 @@ private:
 
             for (auto& nbcell: nb){
                 Wall wall = Wall(*nbcell, *cell);
-                if (!wallExist(wall))
+                auto poswall = find(walls.begin(), walls.end(), wall);
+                if (poswall == walls.end())
                     walls.push_back(wall);
             }
         }

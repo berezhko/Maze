@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <list>
+#include <cassert>
 
 #include "wall.h"
 #include "cell.h"
@@ -50,6 +51,7 @@ public:
                 for (; id < cell->getId(); id++){
                     Wall wall = Wall( *(cells[id]), *(cells[id+sizeh]) );
                     auto poswall = find(walls.begin(), walls.end(), wall);
+                    assert(poswall != walls.end());
                     if( poswall->isExist() )
                         cout << "--+";
                     else
@@ -62,6 +64,7 @@ public:
                 cout << "  ";
                 Wall wall = Wall( *cell, *(cells[cell->getId()]) );
                 auto poswall = find(walls.begin(), walls.end(), wall);
+                assert(poswall != walls.end());
                 if( poswall->isExist() )
                     cout << "|";
                 else
@@ -117,7 +120,10 @@ private:
     void makeCells()
     {
         for (size_t id = 1; id <= sizeh*sizev; id++)
-            cells.push_back(SpCell {new Cell(id)});
+            cells.push_back(SpCell {new Cell(id), [](Cell *c) {
+                                    cout << c->getId() << endl;
+                                    delete c;
+            }});
 
         for (auto& cell: cells){
             vector<SpCell> nb = findNeighborCell(cell->getId());

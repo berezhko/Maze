@@ -14,10 +14,12 @@ class Maze
 public:
     typedef shared_ptr<Cell> SpCell;
 
-    explicit Maze(size_t s): size(s)
+    explicit Maze(size_t s): Maze(s, s) { }
+    Maze(size_t h, size_t v): sizeh(h), sizev(v)
     {
         makeCells();
         makeWalls();
+        makeMaze();
     }
 
     void printCells()
@@ -59,23 +61,23 @@ public:
     void drawMaze()
     {
         cout << "+";
-        for (size_t i = 0; i < size; i++)
+        for (size_t i = 0; i < sizeh; i++)
             cout << "--+";
         cout << endl;
         for (auto& cell: cells){
-            if ((cell->getId() % size == 0) && (cell->getId() != size*size)){
+            if ((cell->getId() % sizeh == 0) && (cell->getId() != sizeh*sizev)){
                 cout << "  |"<< endl << "+";
-                size_t id = cell->getId() - size;
+                size_t id = cell->getId() - sizeh;
                 for (; id < cell->getId(); id++){
-                    Wall wall = Wall( *(cells[id]), *(cells[id+size]) );
+                    Wall wall = Wall( *(cells[id]), *(cells[id+sizeh]) );
                     if( ! wallBreaked(wall) )
                         cout << "--+";
                     else
                         cout << "  +";
                 }
                 cout << endl;
-            }else if (cell->getId() != size*size){
-                if (cell->getId() % size == 1)
+            }else if (cell->getId() != sizeh*sizev){
+                if (cell->getId() % sizeh == 1)
                     cout << "|";
                 cout << "  ";
                 Wall wall = Wall( *cell, *(cells[cell->getId()]) );
@@ -86,32 +88,32 @@ public:
             }
         }
         cout << "  |" << endl << "+";
-        for (size_t i = 0; i < size; i++)
+        for (size_t i = 0; i < sizeh; i++)
             cout << "--+";
         cout << endl;
     }
 private:
-    Maze(): size(0) {}
+    Maze(): sizeh(0), sizev(0) {}
 
     vector<SpCell> findNeighborCell(size_t id)
     {
-        size_t line = ((id-1)/size) + 1;
+        size_t line = ((id-1)/sizeh) + 1;
         vector<SpCell> nb;
 
-        if (id + size <= size*size)
-            nb.push_back( cells[id+size - 1] );
-        if (id - size >= 1 && id - size <= size*size)
-            nb.push_back( cells[id-size -1] );
-        if (id + 1 <= line*size)
+        if (id + sizeh <= sizeh*sizev)
+            nb.push_back( cells[id+sizeh - 1] );
+        if (id - sizeh >= 1 && id - sizeh <= sizeh*sizev)
+            nb.push_back( cells[id-sizeh - 1] );
+        if (id + 1 <= line*sizeh)
             nb.push_back( cells[id+1 - 1] );
-        if (id - 1 >= (line-1)*size+1)
+        if (id - 1 >= (line-1)*sizeh+1)
             nb.push_back( cells[id-1 -1] );
 
         return nb;
     }
     void makeCells()
     {
-        for (size_t id = 1; id <= size*size; id++)
+        for (size_t id = 1; id <= sizeh*sizev; id++)
             cells.push_back(SpCell {new Cell(id)});
 
         for (auto& cell: cells){
@@ -147,7 +149,8 @@ private:
         }
     }
 
-    size_t size;
+    size_t sizeh;
+    size_t sizev;
     vector<SpCell> cells;
     vector<Wall> walls;
 };

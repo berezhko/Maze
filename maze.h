@@ -121,7 +121,7 @@ private:
     {
         for (size_t id = 1; id <= sizeh*sizev; id++)
             cells.push_back(SpCell {new Cell(id), [](Cell *c) {
-                                    cout << c->getId() << endl;
+                                    //cout << c->getId() << " ";
                                     delete c;
             }});
 

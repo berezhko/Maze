@@ -2,7 +2,6 @@
 #include <memory>
 #include <vector>
 #include <list>
-#include <set>
 
 #include "wall.h"
 #include "cell.h"
@@ -39,7 +38,7 @@ public:
     {
         list<SpCell> steck;
         steck.push_back(cells[0]);
-        cells[0]->toVisit();
+        steck.back()->toVisit();
         while (!steck.empty()){
             SpCell cell = steck.back();
             if (cell->existNeighborNotVisit()){
@@ -94,9 +93,10 @@ public:
 private:
     Maze(): size(0) {}
 
-    void findNeighborCell(vector<SpCell>& nb, size_t id)
+    vector<SpCell> findNeighborCell(size_t id)
     {
         size_t line = ((id-1)/size) + 1;
+        vector<SpCell> nb;
 
         if (id + size <= size*size)
             nb.push_back( cells[id+size - 1] );
@@ -106,6 +106,8 @@ private:
             nb.push_back( cells[id+1 - 1] );
         if (id - 1 >= (line-1)*size+1)
             nb.push_back( cells[id-1 -1] );
+
+        return nb;
     }
     void makeCells()
     {
@@ -113,9 +115,8 @@ private:
             cells.push_back(SpCell {new Cell(id)});
 
         for (auto& cell: cells){
-            vector<SpCell> nbcells;
-            findNeighborCell(nbcells, cell->getId());
-            cell->storeNeighborCell(nbcells);
+            vector<SpCell> nb = findNeighborCell(cell->getId());
+            cell->storeNeighborCell(nb);
         }
     }
     bool wallExist(const Wall& w)
@@ -136,11 +137,10 @@ private:
     void makeWalls()
     {
         for (auto& cell: cells){
-            vector<SpCell> nbcells;
-            findNeighborCell(nbcells, cell->getId());
+            vector<SpCell> nb =  findNeighborCell(cell->getId());
 
-            for (auto& nb: nbcells){
-                Wall wall = Wall(*nb, *cell);
+            for (auto& nbcell: nb){
+                Wall wall = Wall(*nbcell, *cell);
                 if (!wallExist(wall))
                     walls.push_back(wall);
             }

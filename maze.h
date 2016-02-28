@@ -18,6 +18,7 @@ class Maze
 {
 public:
     typedef shared_ptr<Cell> SpCell;
+    typedef shared_ptr<Wall> SpWall;
 
     explicit Maze(size_t s): Maze(s, s) { }
     Maze(size_t h, size_t v): sizeh(h), sizev(v)
@@ -35,8 +36,8 @@ public:
     void printWalls()
     {
         for(auto& wall: walls){
-            if (wall.isExist()){
-                wall.printWall();
+            if (wall->isExist()){
+                wall->printWall();
                 cout << endl;
             }
         }
@@ -52,10 +53,10 @@ public:
                 cout << "  |"<< endl << "+";
                 size_t id = cell->getId() - sizeh;
                 for (; id < cell->getId(); id++){
-                    Wall wall = Wall( *(cells[id]), *(cells[id+sizeh]) );
-                    auto poswall = find(walls.begin(), walls.end(), wall);
+                    SpWall wall { new Wall( *(cells[id]), *(cells[id+sizeh]) ) };
+                    auto poswall = find_if(walls.begin(), walls.end(), [&wall](SpWall w){return *w == *wall;});
                     assert(poswall != walls.end());
-                    if( poswall->isExist() )
+                    if( (*poswall)->isExist() )
                         cout << "--+";
                     else
                         cout << "  +";
@@ -65,10 +66,10 @@ public:
                 if (cell->getId() % sizeh == 1)
                     (cell->getId() == 1) ? cout << " " : cout << "|";
                 cout << "  ";
-                Wall wall = Wall( *cell, *(cells[cell->getId()]) );
-                auto poswall = find(walls.begin(), walls.end(), wall);
+                SpWall wall { new Wall( *cell, *(cells[cell->getId()]) ) };
+                auto poswall = find_if(walls.begin(), walls.end(), [&wall](SpWall w){return *w == *wall;});
                 assert(poswall != walls.end());
-                if( poswall->isExist() )
+                if( (*poswall)->isExist() )
                     cout << "|";
                 else
                     cout << " ";
@@ -99,8 +100,8 @@ private:
                 steck.push_back(randomcell);
                 Wall wall = Wall(*cell, *randomcell);
                 for (auto& w: walls)
-                    if (w == wall){
-                        w.breakWall();
+                    if (*w == wall){
+                        w->breakWall();
                         break;
                     }
             }else{
@@ -135,6 +136,7 @@ private:
         for (auto& cell: cells){
             vector<SpCell> nb = findNeighborCell(cell->getId());
             cell->storeNeighborCell(nb);
+            // TODO makeWall() do this
         }
     }
     void makeWalls()
@@ -143,10 +145,16 @@ private:
             vector<SpCell> nb =  findNeighborCell(cell->getId());
 
             for (auto& nbcell: nb){
-                Wall wall = Wall(*nbcell, *cell);
-                auto poswall = find(walls.begin(), walls.end(), wall);
+                SpWall wall {new Wall(*nbcell, *cell), [](Wall *w) {
+                                    //w->printWall();
+                                    delete w;
+                }};
+                auto poswall = find_if(walls.begin(), walls.end(),
+                                    [&wall](SpWall w){return *w == *wall;});
                 if (poswall == walls.end())
                     walls.push_back(wall);
+                // TODO save to me as weak_ptr<Wall>
+                // cell->storeWallToNeigCell(wall)
             }
         }
     }
@@ -155,6 +163,6 @@ private:
     size_t sizeh;
     size_t sizev;
     vector<SpCell> cells;
-    vector<Wall> walls;
+    vector<SpWall> walls;
 };
 

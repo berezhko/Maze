@@ -53,10 +53,9 @@ public:
                 cout << "  |"<< endl << "+";
                 size_t id = cell->getId() - sizeh;
                 for (; id < cell->getId(); id++){
-                    SpWall wall { new Wall( *(cells[id]), *(cells[id+sizeh]) ) };
-                    auto poswall = find_if(walls.begin(), walls.end(), [&wall](SpWall w){return *w == *wall;});
-                    assert(poswall != walls.end());
-                    if( (*poswall)->isExist() )
+                    SpWall wall = cells[id]->getWall(cells[id+sizeh]);
+                    assert(wall != nullptr);
+                    if( wall->isExist() )
                         cout << "--+";
                     else
                         cout << "  +";
@@ -66,10 +65,9 @@ public:
                 if (cell->getId() % sizeh == 1)
                     (cell->getId() == 1) ? cout << " " : cout << "|";
                 cout << "  ";
-                SpWall wall { new Wall( *cell, *(cells[cell->getId()]) ) };
-                auto poswall = find_if(walls.begin(), walls.end(), [&wall](SpWall w){return *w == *wall;});
-                assert(poswall != walls.end());
-                if( (*poswall)->isExist() )
+                SpWall wall = cell->getWall(cells[cell->getId()]);
+                assert(wall != nullptr);
+                if( wall->isExist() )
                     cout << "|";
                 else
                     cout << " ";
@@ -97,13 +95,8 @@ private:
             if (cell->existNeighborNotVisit()){
                 SpCell randomcell {cell->getNeighborNotVisit()};
                 randomcell->toVisit();
+                randomcell->breakWall(cell);
                 steck.push_back(randomcell);
-                Wall wall = Wall(*cell, *randomcell);
-                for (auto& w: walls)
-                    if (*w == wall){
-                        w->breakWall();
-                        break;
-                    }
             }else{
                 steck.pop_back();
             }
@@ -135,8 +128,8 @@ private:
 
         for (auto& cell: cells){
             vector<SpCell> nb = findNeighborCell(cell->getId());
-            cell->storeNeighborCell(nb);
-            // TODO makeWall() do this
+            cell->storeNeighborCells(nb);
+            // TODO makeWall() do this ?
         }
     }
     void makeWalls()
@@ -145,16 +138,17 @@ private:
             vector<SpCell> nb =  findNeighborCell(cell->getId());
 
             for (auto& nbcell: nb){
-                SpWall wall {new Wall(*nbcell, *cell), [](Wall *w) {
+                SpWall wall {new Wall(*cell, *nbcell), [](Wall *w) {
                                     //w->printWall();
                                     delete w;
                 }};
                 auto poswall = find_if(walls.begin(), walls.end(),
                                     [&wall](SpWall w){return *w == *wall;});
-                if (poswall == walls.end())
+                if (poswall == walls.end()){
                     walls.push_back(wall);
-                // TODO save to me as weak_ptr<Wall>
-                // cell->storeWallToNeigCell(wall)
+                    cell->storeWallToNeigCell(wall);
+                }else
+                    cell->storeWallToNeigCell(*poswall);
             }
         }
     }

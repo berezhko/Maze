@@ -44,33 +44,39 @@ public:
     }
     void drawMaze()
     {
+        SpWall wall;
         cout << "+";
         for (size_t i = 0; i < sizeh; i++)
             cout << "--+";
         cout << endl;
+        string hline = "+";
         for (auto& cell: cells){
-            if ((cell->getId() % sizeh == 0) && (cell->getId() != sizeh*sizev)){
-                cout << "  |"<< endl << "+";
-                size_t id = cell->getId() - sizeh;
-                for (; id < cell->getId(); id++){
-                    SpWall wall = cells[id]->getWall(cells[id+sizeh]);
-                    assert(wall != nullptr);
-                    if( wall->isExist() )
-                        cout << "--+";
-                    else
-                        cout << "  +";
-                }
-                cout << endl;
-            }else if (cell->getId() != sizeh*sizev){
-                if (cell->getId() % sizeh == 1)
-                    (cell->getId() == 1) ? cout << " " : cout << "|";
-                cout << "  ";
-                SpWall wall = cell->getWall(cells[cell->getId()]);
-                assert(wall != nullptr);
+            if (cell->getId() == sizeh*sizev)
+                break;
+
+            if (cell->getId() % sizeh == 1)
+                (cell->getId() == 1) ? cout << " " : cout << "|";
+            cout << "  ";
+
+            size_t down = cell->getId()+sizeh;
+            wall = cell->getWall(down);
+            if (wall != nullptr){
+                if( wall->isExist() )
+                    hline += "--+";
+                else
+                    hline += "  +";
+            }
+
+            size_t right = cell->getId()+1;
+            wall = cell->getWall(right);
+            if (wall != nullptr){
                 if( wall->isExist() )
                     cout << "|";
                 else
                     cout << " ";
+            }else{
+                cout << "|" << endl << hline << endl;
+                hline = "+";
             }
         }
         cout << "   " << endl << "+";

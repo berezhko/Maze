@@ -135,9 +135,20 @@ bool Cell::breakWall(const SpCell& nb)
 
 SpWall Cell::getWall(const SpCell& nb)
 {
-    Wall wall = Wall(*this, *nb);
-    for (auto& w: walls)
-        if (*(w.lock()) == wall)
-            return w.lock();
+    return getWall(nb->getId());
+}
+
+SpWall Cell::getWall(size_t id)
+{
+    for (auto& nb: neighbor){
+        if (id == nb.lock()->getId()){
+            Wall wall = Wall( *this, *(nb.lock()) );
+            for (auto& w: walls)
+                if (*(w.lock()) == wall)
+                    return w.lock();
+            assert(false);
+        }
+    }
     return nullptr;
 }
+

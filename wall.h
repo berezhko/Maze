@@ -16,11 +16,11 @@ public:
     {
         exist = false;
     }
-    bool isExist()
+    bool isExist() const
     {
         return exist;
     }
-    void printWall()
+    void printWall() const
     {
         cout << "(" << wall.first.getId() << ", " << wall.second.getId() << ")";
     }

@@ -17,7 +17,6 @@ public:
     typedef shared_ptr<Wall> SpWall;
 
     Cell(size_t i);
-
     Cell(const Cell& cell);
 
     bool isVisit() const;
@@ -32,6 +31,7 @@ public:
     void printWallToNeigCell() const;
     bool breakWall(const SpCell& nb);
     SpWall getWall(const SpCell& nb);
+    SpWall getWall(size_t id);
 
     friend bool operator==(const Cell& lhs, const Cell& rhs);
     friend bool operator!=(const Cell& lhs, const Cell& rhs);

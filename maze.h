@@ -28,8 +28,8 @@ public:
 
 protected:
     Maze();
-    //Maze(const Maze&);
-    //Maze& operator=(const Maze&);
+    Maze(const Maze&);
+    Maze& operator=(const Maze&);
 
 private:
     void makeMaze();

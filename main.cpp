@@ -54,18 +54,25 @@ void drawMaze(Maze *m)
     cout << endl;
 }
 
-
-int main(int ac, char *av[])
+unique_ptr<Maze> initMaze(int ac, char *av[])
 {
     if (ac < 2)
-        return 0;
+        return nullptr;
 
     Maze *m;
-
     if (ac == 2)
         m = new Maze(stoi(av[1]));
     else
         m = new Maze(stoi(av[1]), stoi(av[2]));
 
-    drawMaze(m);
+    unique_ptr<Maze> up(m);
+    return up;
+}
+
+int main(int ac, char *av[])
+{
+    unique_ptr<Maze> maze = initMaze(ac, av);
+
+    if (maze)
+        drawMaze(maze.get());
 }

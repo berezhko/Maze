@@ -6,6 +6,7 @@
 #include <vector>
 #include <random>
 #include <ctime>
+#include <cassert>
 
 using namespace std;
 
@@ -64,6 +65,8 @@ public:
         for (auto& nb: neighbor)
             if (nb.lock()->isVisit() == false)
                 tmp.push_back(nb);
+
+        assert(tmp.size() != 0);
 
         size_t rnd = getRandom(tmp.size());
         return tmp[rnd];

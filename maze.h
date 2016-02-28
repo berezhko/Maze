@@ -11,6 +11,9 @@
 using namespace std;
 
 
+size_t getRandom(int n);
+
+
 class Maze
 {
 public:
@@ -60,7 +63,7 @@ public:
                 cout << endl;
             }else if (cell->getId() != sizeh*sizev){
                 if (cell->getId() % sizeh == 1)
-                    cout << "|";
+                    (cell->getId() == 1) ? cout << " " : cout << "|";
                 cout << "  ";
                 Wall wall = Wall( *cell, *(cells[cell->getId()]) );
                 auto poswall = find(walls.begin(), walls.end(), wall);
@@ -71,18 +74,22 @@ public:
                     cout << " ";
             }
         }
-        cout << "  |" << endl << "+";
+        cout << "   " << endl << "+";
         for (size_t i = 0; i < sizeh; i++)
             cout << "--+";
         cout << endl;
     }
-private:
-    Maze(): sizeh(0), sizev(0) {}
 
+protected:
+    Maze();
+    Maze(const Maze&);
+    Maze& operator=(const Maze&);
+
+private:
     void makeMaze()
     {
         list<SpCell> steck;
-        steck.push_back(cells[0]);
+        steck.push_back(cells[getRandom(cells.size())]);
         steck.back()->toVisit();
         while (!steck.empty()){
             SpCell cell = steck.back();
@@ -144,6 +151,7 @@ private:
         }
     }
 
+private:
     size_t sizeh;
     size_t sizev;
     vector<SpCell> cells;

@@ -21,7 +21,7 @@ public:
     typedef shared_ptr<Wall> SpWall;
 
     explicit Maze(size_t s): Maze(s, s) { }
-    Maze(size_t h, size_t v): sizeh(h), sizev(v)
+    Maze(size_t v, size_t h): sizev(v), sizeh(h)
     {
         makeCells();
         makeWalls();
@@ -160,8 +160,8 @@ private:
     }
 
 private:
-    size_t sizeh;
     size_t sizev;
+    size_t sizeh;
     vector<SpCell> cells;
     vector<SpWall> walls;
 };

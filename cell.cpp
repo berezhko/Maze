@@ -8,12 +8,12 @@
 #include "cell.h"
 #include "wall.h"
 
+using namespace std;
+
 typedef weak_ptr<Cell> WpCell;
 typedef shared_ptr<Cell> SpCell;
 typedef weak_ptr<Wall> WpWall;
 typedef shared_ptr<Wall> SpWall;
-
-using namespace std;
 
 
 size_t getRandom(int n)

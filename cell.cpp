@@ -97,30 +97,6 @@ bool Cell::existNeighborNotVisit() const
     return false;
 }
 
-void Cell::printNeighbor() const
-{
-    cout << getId() << ": ";
-    for (auto& nb: neighbor)
-        cout << nb.lock()->getId() << " ";
-    cout << endl;
-}
-
-void Cell::printNeighborNotVisit() const
-{
-    cout << getId() << ": ";
-    for (auto& nb: neighbor)
-        if (nb.lock()->isVisit() == false)
-            cout << nb.lock()->getId() << " ";
-}
-
-void Cell::printWallToNeigCell() const
-{
-    cout << getId() << ": ";
-    for (auto& w: walls)
-        w.lock()->printWall();
-    cout << endl;
-}
-
 bool Cell::breakWall(const SpCell& nb)
 {
     Wall wall = Wall(*this, *nb);

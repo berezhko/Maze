@@ -27,9 +27,6 @@ public:
     void storeWallToNeigCell(const SpWall& w);
     WpCell getNeighborNotVisit();
     bool existNeighborNotVisit() const;
-    void printNeighbor() const;
-    void printNeighborNotVisit() const;
-    void printWallToNeigCell() const;
     bool breakWall(const SpCell& nb);
     SpWall getWall(const SpCell& nb);
     SpWall getWall(size_t id);

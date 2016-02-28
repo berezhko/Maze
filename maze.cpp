@@ -118,17 +118,22 @@ void Maze::makeWalls()
 
 Iterator::Iterator(Maze *m): maze(m), id(0) {}
 
-void Iterator::first()
+void Iterator::begin()
 {
     id = 0;
 }
 
-void Iterator::next()
+void Iterator::operator++()
+{
+    ++id;
+}
+
+void Iterator::operator++(int)
 {
     id++;
 }
 
-bool Iterator::isDone()
+bool Iterator::end()
 {
     return id >= maze->countCells();
 }
@@ -145,6 +150,22 @@ Iterator_ptr::~Iterator_ptr()
     delete _i;
 }
 
-Iterator* Iterator_ptr::operator->() {return _i;}
-Iterator Iterator_ptr::operator*() {return *_i;}
+Iterator* Iterator_ptr::operator->()
+{
+    return _i;
+}
+
+Iterator Iterator_ptr::operator*(){
+    return *_i;
+}
+
+void Iterator_ptr::operator++()
+{
+    ++(*_i);
+}
+
+void Iterator_ptr::operator++(int)
+{
+    (*_i)++;
+}
 

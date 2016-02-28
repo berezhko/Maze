@@ -25,7 +25,6 @@ size_t getRandom(int n)
     flag = 1;
 
     uniform_int_distribution<int> di(0, n-1);
-    di(dre);
 
     return (size_t)di(dre);
 }

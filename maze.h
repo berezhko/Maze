@@ -24,7 +24,6 @@ public:
     size_t countCells() const;
     SpCell getCell(size_t id) const;
     Iterator* createIterator();
-
     pair<size_t, size_t> getDimension() const;
 
 protected:
@@ -53,9 +52,10 @@ public:
 
     Iterator(Maze *m);
 
-    void first();
-    void next();
-    bool isDone();
+    void begin();
+    void operator++();
+    void operator++(int);
+    bool end();
     SpCell currentCell();
 
 private:
@@ -72,6 +72,8 @@ public:
 
     Iterator* operator->();
     Iterator operator*();
+    void operator++();
+    void operator++(int);
 protected:
     Iterator_ptr(const Iterator_ptr&);
     Iterator_ptr& operator=(const Iterator_ptr&);

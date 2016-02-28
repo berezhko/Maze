@@ -20,7 +20,7 @@ void drawMaze(Maze *m)
     string hline = "+";
 
     Iterator_ptr i(m->createIterator());
-    for (i->first();! i->isDone(); i->next()){
+    for (i->begin();! i->end(); i++){
         shared_ptr<Cell> cell = i->currentCell();
         if (cell->getId() == sizeh*sizev)
             break;
@@ -29,8 +29,7 @@ void drawMaze(Maze *m)
             (cell->getId() == 1) ? cout << " " : cout << "|";
         cout << "  ";
 
-        size_t down = cell->getId()+sizeh;
-        wall = cell->getWall(down);
+        wall = cell->getWall(cell->getId()+sizeh);
         if (wall != nullptr){
             if( wall->isExist() )
                 hline += "--+";
@@ -38,8 +37,7 @@ void drawMaze(Maze *m)
                 hline += "  +";
         }
 
-        size_t right = cell->getId()+1;
-        wall = cell->getWall(right);
+        wall = cell->getWall(cell->getId()+1);
         if (wall != nullptr){
             if( wall->isExist() )
                 cout << "|";
@@ -70,6 +68,4 @@ int main(int ac, char *av[])
         m = new Maze(stoi(av[1]), stoi(av[2]));
 
     drawMaze(m);
-
-
 }

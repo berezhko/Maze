@@ -1,116 +1,49 @@
 #ifndef CELL_H
 #define CELL_H
 
-#include <iostream>
 #include <memory>
 #include <vector>
-#include <random>
-#include <ctime>
-#include <cassert>
 
 using namespace std;
 
-
-size_t getRandom(int n)
-{
-    static int flag;
-    static std::default_random_engine dre;
-    if (flag == 0)
-        dre.seed(time(NULL));
-    flag = 1;
-
-    uniform_int_distribution<int> di(0, n-1);
-    di(dre);
-
-    return (size_t)di(dre);
-}
-
+class Wall;
 
 class Cell
 {
 public:
     typedef weak_ptr<Cell> WpCell;
     typedef shared_ptr<Cell> SpCell;
+    typedef weak_ptr<Wall> WpWall;
+    typedef shared_ptr<Wall> SpWall;
 
-    Cell(size_t i):
-        id(i),
-        visit(false){}
+    Cell(size_t i);
 
-    Cell(const Cell& cell)
-    {
-        id = cell.getId();
-        visit = cell.isVisit();
-    }
+    Cell(const Cell& cell);
 
-    bool isVisit() const
-    {
-        return visit;
-    }
-    void toVisit()
-    {
-        visit = true;
-    }
-    size_t getId() const
-    {
-        return id;
-    }
-    void storeNeighborCell(const vector<SpCell>& nb)
-    {
-        for (auto& n: nb)
-            neighbor.push_back(n);
-    }
-    WpCell getNeighborNotVisit()
-    {
-        vector<WpCell> tmp;
-        for (auto& nb: neighbor)
-            if (nb.lock()->isVisit() == false)
-                tmp.push_back(nb);
-
-        assert(tmp.size() != 0);
-
-        size_t rnd = getRandom(tmp.size());
-        return tmp[rnd];
-    }
-    bool existNeighborNotVisit()
-    {
-        for (auto& nb: neighbor)
-            if (nb.lock()->isVisit() == false)
-                return true;
-        return false;
-    }
-    void printNeighbor()
-    {
-        cout << getId() << ": ";
-        for (auto& nb: neighbor)
-            cout << nb.lock()->getId() << " ";
-        cout << endl;
-    }
-    void printNeighborNotVisit()
-    {
-        cout << getId() << ": ";
-        for (auto& nb: neighbor)
-            if (nb.lock()->isVisit() == false)
-                cout << nb.lock()->getId() << " ";
-    }
+    bool isVisit() const;
+    void toVisit();
+    size_t getId() const;
+    void storeNeighborCells(const vector<SpCell>& nb);
+    void storeWallToNeigCell(const SpWall& w);
+    WpCell getNeighborNotVisit();
+    bool existNeighborNotVisit() const;
+    void printNeighbor() const;
+    void printNeighborNotVisit() const;
+    void printWallToNeigCell() const;
+    bool breakWall(const SpCell& nb);
+    SpWall getWall(const SpCell& nb);
 
     friend bool operator==(const Cell& lhs, const Cell& rhs);
     friend bool operator!=(const Cell& lhs, const Cell& rhs);
-private:
-    Cell(){}
 
+protected:
+    Cell();
+
+private:
     size_t id;
     bool visit;
     vector<WpCell> neighbor;
+    vector<WpWall> walls;
 };
-
-inline bool operator==(const Cell& lhs, const Cell& rhs)
-{
-    return  (lhs.id == rhs.id);
-}
-
-inline bool operator!=(const Cell& lhs, const Cell& rhs)
-{
-    return !(lhs == rhs);
-}
 
 #endif

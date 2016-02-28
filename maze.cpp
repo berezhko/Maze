@@ -23,63 +23,25 @@ Maze::Maze(size_t v, size_t h): sizev(v), sizeh(h)
     makeMaze();
 }
 
-void Maze::printCells()
+size_t Maze::countCells() const
 {
-    for(auto& c: cells)
-        c->printNeighbor();
+    return sizev*sizeh;
 }
 
-void Maze::printWalls()
+SpCell Maze::getCell(size_t i) const
 {
-    for(auto& wall: walls){
-        if (wall->isExist()){
-            wall->printWall();
-            cout << endl;
-        }
-    }
+    assert(i <= countCells());
+    return cells[i];
 }
 
-void Maze::drawMaze()
+Iterator* Maze::createIterator()
 {
-    SpWall wall;
-    cout << "+";
-    for (size_t i = 0; i < sizeh; i++)
-        cout << "--+";
-    cout << endl;
-    string hline = "+";
-    for (auto& cell: cells){
-        if (cell->getId() == sizeh*sizev)
-            break;
+    return new Iterator(this);
+}
 
-        if (cell->getId() % sizeh == 1)
-            (cell->getId() == 1) ? cout << " " : cout << "|";
-        cout << "  ";
-
-        size_t down = cell->getId()+sizeh;
-        wall = cell->getWall(down);
-        if (wall != nullptr){
-            if( wall->isExist() )
-                hline += "--+";
-            else
-                hline += "  +";
-        }
-
-        size_t right = cell->getId()+1;
-        wall = cell->getWall(right);
-        if (wall != nullptr){
-            if( wall->isExist() )
-                cout << "|";
-            else
-                cout << " ";
-        }else{
-            cout << "|" << endl << hline << endl;
-            hline = "+";
-        }
-    }
-    cout << "   " << endl << "+";
-    for (size_t i = 0; i < sizeh; i++)
-        cout << "--+";
-    cout << endl;
+pair<size_t, size_t> Maze::getDimension() const
+{
+    return make_pair(sizev, sizeh);
 }
 
 void Maze::makeMaze()
@@ -152,3 +114,37 @@ void Maze::makeWalls()
         }
     }
 }
+
+
+Iterator::Iterator(Maze *m): maze(m), id(0) {}
+
+void Iterator::first()
+{
+    id = 0;
+}
+
+void Iterator::next()
+{
+    id++;
+}
+
+bool Iterator::isDone()
+{
+    return id >= maze->countCells();
+}
+
+SpCell Iterator::currentCell()
+{
+    return maze->getCell(id);
+}
+
+Iterator_ptr::Iterator_ptr(Iterator *i): _i(i) {}
+Iterator_ptr::~Iterator_ptr()
+{
+    //cout << "Iterator destroy" << endl;
+    delete _i;
+}
+
+Iterator* Iterator_ptr::operator->() {return _i;}
+Iterator Iterator_ptr::operator*() {return *_i;}
+

@@ -8,6 +8,7 @@ using std::vector;
 
 size_t getRandom(int n);
 
+class Iterator;
 
 class Maze
 {
@@ -20,14 +21,16 @@ public:
     explicit Maze(size_t s);
     Maze(size_t v, size_t h);
 
-    void printCells();
-    void printWalls();
-    void drawMaze();
+    size_t countCells() const;
+    SpCell getCell(size_t id) const;
+    Iterator* createIterator();
+
+    pair<size_t, size_t> getDimension() const;
 
 protected:
     Maze();
-    Maze(const Maze&);
-    Maze& operator=(const Maze&);
+    //Maze(const Maze&);
+    //Maze& operator=(const Maze&);
 
 private:
     void makeMaze();
@@ -42,3 +45,37 @@ private:
     vector<SpWall> walls;
 };
 
+
+class Iterator
+{
+public:
+    typedef shared_ptr<Cell> SpCell;
+
+    Iterator(Maze *m);
+
+    void first();
+    void next();
+    bool isDone();
+    SpCell currentCell();
+
+private:
+    Maze *maze;
+    size_t id;
+};
+
+
+class Iterator_ptr
+{
+public:
+    Iterator_ptr(Iterator *i);
+    ~Iterator_ptr();
+
+    Iterator* operator->();
+    Iterator operator*();
+protected:
+    Iterator_ptr(const Iterator_ptr&);
+    Iterator_ptr& operator=(const Iterator_ptr&);
+
+private:
+    Iterator *_i;
+};

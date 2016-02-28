@@ -113,14 +113,14 @@ private:
         size_t line = ((id-1)/sizeh) + 1;
         vector<SpCell> nb;
 
-        if (id + sizeh <= sizeh*sizev)
-            nb.push_back( cells[id+sizeh - 1] );
         if (id - sizeh >= 1 && id - sizeh <= sizeh*sizev)
             nb.push_back( cells[id-sizeh - 1] );
-        if (id + 1 <= line*sizeh)
-            nb.push_back( cells[id+1 - 1] );
         if (id - 1 >= (line-1)*sizeh+1)
             nb.push_back( cells[id-1 -1] );
+        if (id + 1 <= line*sizeh)
+            nb.push_back( cells[id+1 - 1] );
+        if (id + sizeh <= sizeh*sizev)
+            nb.push_back( cells[id+sizeh - 1] );
 
         return nb;
     }
